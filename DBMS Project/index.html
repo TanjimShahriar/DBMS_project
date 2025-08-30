@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitalAgri - Smart Agriculture Supply Chain Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-leaf"></i>
+                <span>DigitalAgri</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link active">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#products" class="nav-link">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#transportation" class="nav-link">Transportation</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tracking" class="nav-link">Tracking</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#analytics" class="nav-link">Analytics</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Smart Agriculture Supply Chain with Real-Time Tracking</h1>
+            <p>Revolutionize your agricultural logistics with data-driven insights, reduced waste, and timely delivery optimization.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('products')">Explore System</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('analytics')">View Dashboard</button>
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <i class="fas fa-truck"></i>
+                <h3>500+</h3>
+                <p>Active Deliveries</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-warehouse"></i>
+                <h3>50+</h3>
+                <p>Warehouses</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-chart-line"></i>
+                <h3>95%</h3>
+                <p>On-Time Delivery</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="section">
+        <div class="container">
+            <h2 class="section-title">Product Management</h2>
+            <div class="products-controls">
+                <div class="search-box">
+                    <input type="text" id="productSearch" placeholder="Search products...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="filter-controls">
+                    <select id="cropFilter">
+                        <option value="">All Crops</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Corn">Corn</option>
+                        <option value="Soybeans">Soybeans</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Vegetables">Vegetables</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="Growing">Growing</option>
+                        <option value="Harvested">Harvested</option>
+                        <option value="Stored">Stored</option>
+                        <option value="In Transit">In Transit</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="openAddProductModal()">
+                    <i class="fas fa-plus"></i> Add Product
+                </button>
+            </div>
+            <div class="products-table-container">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Crop Type <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(1)">Planting Date <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(2)">Harvest Date <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(3)">Storage Requirements <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(4)">Shelf Life <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(5)">Packaging <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable(6)">Status <i class="fas fa-sort"></i></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <!-- Products will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stock & Warehouse Section -->
+    <section id="warehouse" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title">Stock & Warehouse Monitoring</h2>
+            <div class="warehouse-grid" id="warehouseGrid">
+                <!-- Warehouse cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Transportation Section -->
+    <section id="transportation" class="section">
+        <div class="container">
+            <h2 class="section-title">Transportation Scheduling</h2>
+            <div class="transportation-content">
+                <div class="transportation-form">
+                    <h3>Schedule New Delivery</h3>
+                    <form id="transportationForm">
+                        <div class="form-group">
+                            <label for="vehicleId">Vehicle/Driver</label>
+                            <select id="vehicleId" required>
+                                <option value="">Select Vehicle</option>
+                                <option value="TRK001">TRK001 - John Smith</option>
+                                <option value="TRK002">TRK002 - Sarah Johnson</option>
+                                <option value="TRK003">TRK003 - Mike Davis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">Delivery Destination</label>
+                            <input type="text" id="destination" placeholder="Enter destination address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryDate">Estimated Delivery Date</label>
+                            <input type="datetime-local" id="deliveryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cargoType">Cargo Type</label>
+                            <select id="cargoType" required>
+                                <option value="">Select Cargo</option>
+                                <option value="Wheat">Wheat</option>
+                                <option value="Corn">Corn</option>
+                                <option value="Soybeans">Soybeans</option>
+                                <option value="Vegetables">Vegetables</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity">Quantity (tons)</label>
+                            <input type="number" id="quantity" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Schedule Delivery</button>
+                    </form>
+                </div>
+                <div class="route-optimization">
+                    <h3>Route Optimization</h3>
+                    <div class="map-container">
+                        <div id="routeMap"></div>
+                        <div class="route-info">
+                            <div class="route-stat">
+                                <i class="fas fa-route"></i>
+                                <span>Optimal Route: 245 km</span>
+                            </div>
+                            <div class="route-stat">
+                                <i class="fas fa-clock"></i>
+                                <span>Estimated Time: 4h 30m</span>
+                            </div>
+                            <div class="route-stat">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>Fuel Cost: $180</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tracking Section -->
+    <section id="tracking" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title">Shipment Tracking</h2>
+            <div class="tracking-content">
+                <div class="tracking-map">
+                    <div id="trackingMap"></div>
+                </div>
+                <div class="tracking-details">
+                    <div class="shipment-status">
+                        <h3>Active Shipments</h3>
+                        <div class="shipment-list" id="shipmentList">
+                            <!-- Shipments will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="condition-monitoring">
+                        <h3>Condition Monitoring</h3>
+                        <div class="condition-grid">
+                            <div class="condition-item">
+                                <label>Temperature</label>
+                                <div class="gauge">
+                                    <div class="gauge-fill" style="width: 75%"></div>
+                                </div>
+                                <span>22°C</span>
+                            </div>
+                            <div class="condition-item">
+                                <label>Humidity</label>
+                                <div class="gauge">
+                                    <div class="gauge-fill" style="width: 60%"></div>
+                                </div>
+                                <span>45%</span>
+                            </div>
+                            <div class="condition-item">
+                                <label>Vibration</label>
+                                <div class="gauge">
+                                    <div class="gauge-fill" style="width: 20%"></div>
+                                </div>
+                                <span>Low</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shipping Documents Section -->
+    <section id="documents" class="section">
+        <div class="container">
+            <h2 class="section-title">Shipping Documents</h2>
+            <div class="documents-grid">
+                <div class="document-card">
+                    <i class="fas fa-file-invoice"></i>
+                    <h3>Invoice</h3>
+                    <p>Download shipping invoice</p>
+                    <button class="btn btn-outline">Download PDF</button>
+                </div>
+                <div class="document-card">
+                    <i class="fas fa-file-contract"></i>
+                    <h3>Bill of Lading</h3>
+                    <p>Download BOL document</p>
+                    <button class="btn btn-outline">Download PDF</button>
+                </div>
+                <div class="document-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Customs Declaration</h3>
+                    <p>Download customs forms</p>
+                    <button class="btn btn-outline">Download PDF</button>
+                </div>
+                <div class="document-card">
+                    <i class="fas fa-file-medical"></i>
+                    <h3>Quality Certificate</h3>
+                    <p>Download quality reports</p>
+                    <button class="btn btn-outline">Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Section -->
+    <section id="analytics" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title">Analytics & KPI Dashboard</h2>
+            <div class="analytics-grid">
+                <div class="chart-container">
+                    <h3>Delivery Times</h3>
+                    <canvas id="deliveryChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Transportation Costs</h3>
+                    <canvas id="costChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Carrier Performance</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <h3>95.2%</h3>
+                        <p>On-Time Delivery Rate</p>
+                    </div>
+                    <div class="kpi-card">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h3>$12,450</h3>
+                        <p>Monthly Savings</p>
+                    </div>
+                    <div class="kpi-card">
+                        <i class="fas fa-truck"></i>
+                        <h3>1,247</h3>
+                        <p>Deliveries This Month</p>
+                    </div>
+                    <div class="kpi-card">
+                        <i class="fas fa-star"></i>
+                        <h3>4.8/5</h3>
+                        <p>Customer Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Address</h3>
+                            <p>123 Agriculture Blvd, Farm City, FC 12345</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Phone</h3>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h3>Email</h3>
+                            <p>info@agrichain.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Subject" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-leaf"></i>
+                        <span>AgriChain</span>
+                    </div>
+                    <p>Revolutionizing agricultural supply chain management with smart technology and real-time tracking.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#products">Products</a></li>
+                        <li><a href="#transportation">Transportation</a></li>
+                        <li><a href="#tracking">Tracking</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#warehouse">Warehouse Management</a></li>
+                        <li><a href="#tracking">Real-time Tracking</a></li>
+                        <li><a href="#analytics">Analytics</a></li>
+                        <li><a href="#documents">Documentation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter for updates</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AgriChain. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Product</h3>
+                <span class="close" onclick="closeModal('addProductModal')">&times;</span>
+            </div>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label for="newCropType">Crop Type</label>
+                    <select id="newCropType" required>
+                        <option value="">Select Crop Type</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Corn">Corn</option>
+                        <option value="Soybeans">Soybeans</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Vegetables">Vegetables</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newPlantingDate">Planting Date</label>
+                    <input type="date" id="newPlantingDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="newHarvestDate">Harvest Date</label>
+                    <input type="date" id="newHarvestDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="newStorageRequirements">Storage Requirements</label>
+                    <input type="text" id="newStorageRequirements" placeholder="e.g., Cool, dry environment" required>
+                </div>
+                <div class="form-group">
+                    <label for="newShelfLife">Shelf Life</label>
+                    <input type="text" id="newShelfLife" placeholder="e.g., 12 months" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPackaging">Packaging</label>
+                    <input type="text" id="newPackaging" placeholder="e.g., Bulk bags" required>
+                </div>
+                <div class="form-group">
+                    <label for="newStatus">Status</label>
+                    <select id="newStatus" required>
+                        <option value="">Select Status</option>
+                        <option value="Growing">Growing</option>
+                        <option value="Harvested">Harvested</option>
+                        <option value="Stored">Stored</option>
+                        <option value="In Transit">In Transit</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addProductModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <span class="close" onclick="closeModal('editProductModal')">&times;</span>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductIndex">
+                <div class="form-group">
+                    <label for="editCropType">Crop Type</label>
+                    <select id="editCropType" required>
+                        <option value="">Select Crop Type</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Corn">Corn</option>
+                        <option value="Soybeans">Soybeans</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Vegetables">Vegetables</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editPlantingDate">Planting Date</label>
+                    <input type="date" id="editPlantingDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editHarvestDate">Harvest Date</label>
+                    <input type="date" id="editHarvestDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStorageRequirements">Storage Requirements</label>
+                    <input type="text" id="editStorageRequirements" placeholder="e.g., Cool, dry environment" required>
+                </div>
+                <div class="form-group">
+                    <label for="editShelfLife">Shelf Life</label>
+                    <input type="text" id="editShelfLife" placeholder="e.g., 12 months" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPackaging">Packaging</label>
+                    <input type="text" id="editPackaging" placeholder="e.g., Bulk bags" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStatus">Status</label>
+                    <select id="editStatus" required>
+                        <option value="">Select Status</option>
+                        <option value="Growing">Growing</option>
+                        <option value="Harvested">Harvested</option>
+                        <option value="Stored">Stored</option>
+                        <option value="In Transit">In Transit</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editProductModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <span class="close" onclick="closeModal('deleteProductModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this product?</p>
+                <p><strong id="deleteProductName"></strong></p>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('deleteProductModal')">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteProduct()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
